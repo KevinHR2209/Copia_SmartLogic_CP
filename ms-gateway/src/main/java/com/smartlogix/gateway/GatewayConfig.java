@@ -1,3 +1,4 @@
+/*
 package com.smartlogix.gateway;
 
 import org.springframework.context.annotation.Bean;
@@ -67,3 +68,4 @@ public class GatewayConfig {
         };
     }
 }
+ */

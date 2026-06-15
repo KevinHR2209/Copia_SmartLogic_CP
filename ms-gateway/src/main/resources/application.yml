@@ -4,8 +4,86 @@ server:
 spring:
   application:
     name: ms-gateway
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - "*"
+      routes:
+        # 1. RUTA DE INVENTARIO
+        - id: ms-inventario-route
+          uri: ${URL_MS_INVENTARIO:http://localhost:8081}
+          predicates:
+            - Path=/api/productos/**, /api/bodegas/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: inventarioCB
+                fallbackUri: forward:/fallback/inventario
+
+        # 2. RUTA DE VENTAS
+        - id: ms-ventas-route
+          uri: ${URL_MS_VENTAS:http://localhost:8083}
+          predicates:
+            - Path=/api/pedidos/**, /api/pagos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ventasCB
+                fallbackUri: forward:/fallback/ventas
+
+        # 3. RUTA DE CLIENTES
+        - id: ms-clientes-route
+          uri: ${URL_MS_CLIENTES:http://localhost:8082}
+          predicates:
+            - Path=/api/clientes/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: clientesCB
+                fallbackUri: forward:/fallback/clientes
+
+        # 4. RUTA DE LOGISTICA
+        - id: ms-logistica-route
+          uri: ${URL_MS_LOGISTICA:http://localhost:8084}
+          predicates:
+            - Path=/api/despachos/**, /api/transportistas/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: logisticaCB
+                fallbackUri: forward:/fallback/logistica
+
+# Configuración de Resilience4j
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+    instances:
+      inventarioCB:
+        baseConfig: default
+      ventasCB:
+        baseConfig: default
+      clientesCB:
+        baseConfig: default
+      logisticaCB:
+        baseConfig: default
 
 logging:
   level:
-    org.springframework.web.servlet: DEBUG
-    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.gateway: INFO
