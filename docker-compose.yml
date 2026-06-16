@@ -35,7 +35,7 @@ services:
       - URL_MS_VENTAS=http://ms--ventas:8083
       - URL_MS_CLIENTES=http://ms--clientes:8082
       - URL_MS_LOGISTICA=http://ms--logistica:8084
-    command: mvn spring-boot:run
+    command: mvn clean spring-boot:run
     depends_on:
       postgres:
         condition: service_healthy
@@ -61,7 +61,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ms_inventario
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-    command: mvn spring-boot:run
+    command: mvn clean spring-boot:run
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,6 +70,9 @@ services:
         - action: sync+restart
           path: ./ms_inventario/src
           target: /app/src
+        - action: sync+restart
+          path: ./ms-clientes/pom.xml
+          target: /app/pom.xml
 
   ms-ventas:
     image: maven:3.9.6-eclipse-temurin-21-alpine
@@ -84,7 +87,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ms_ventas
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-    command: mvn spring-boot:run
+    command: mvn clean spring-boot:run
     depends_on:
       postgres:
         condition: service_healthy
@@ -93,6 +96,9 @@ services:
         - action: sync+restart
           path: ./ms-ventas/src
           target: /app/src
+        - action: sync+restart
+          path: ./ms-clientes/pom.xml
+          target: /app/pom.xml
 
   ms-clientes:
     image: maven:3.9.6-eclipse-temurin-21-alpine
@@ -107,7 +113,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ms_cliente
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-    command: mvn spring-boot:run
+    command: mvn clean spring-boot:run
     depends_on:
       postgres:
         condition: service_healthy
@@ -116,6 +122,9 @@ services:
         - action: sync+restart
           path: ./ms-clientes/src
           target: /app/src
+        - action: sync+restart
+          path: ./ms-clientes/pom.xml
+          target: /app/pom.xml
 
   ms-logistica:
     image: maven:3.9.6-eclipse-temurin-21-alpine
@@ -130,7 +139,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ms_logistica
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
-    command: mvn spring-boot:run
+    command: mvn clean spring-boot:run
     depends_on:
       postgres:
         condition: service_healthy
@@ -139,6 +148,9 @@ services:
         - action: sync+restart
           path: ./ms-logistica/src
           target: /app/src
+        - action: sync+restart
+          path: ./ms-clientes/pom.xml
+          target: /app/pom.xml
 
   # 3. FRONTEND
   frontend:
